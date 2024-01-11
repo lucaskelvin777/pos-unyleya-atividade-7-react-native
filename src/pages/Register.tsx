@@ -38,7 +38,7 @@ const App = () => {
         });
     };
     const submitForm = async () => {
-        // Remover o símbolo da moeda (R$) e substituir a vírgula por um ponto
+        
         if (name.length <= 0) {
             Alert.alert("Atenção", "Nome deve ser Preenchido");
             return;
@@ -95,11 +95,11 @@ const App = () => {
                 <TextInputMaskStyled
                     type={'money'}
                     options={{
-                        precision: 2, // optional
+                        precision: 2, 
                         separator: ',',
                         delimiter: '.',
-                        unit: 'R$', // optional
-                        suffixUnit: '', // optional
+                        unit: 'R$', 
+                        suffixUnit: '', 
                     }}
                     value={price}
                     onChangeText={handleMoneyChange}
