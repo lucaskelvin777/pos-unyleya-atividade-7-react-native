@@ -1,49 +1,84 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Alert } from 'react-native';
-import { SearchApi } from '../services/RamgApi';
-import { Button, Input, MainContainer, TextButton, Card, TitleCard, ImageCard, CenterContainer, AlignRowItems, LoadingText } from '../components/Home';
-import { Games } from '../interfaces/Games';
-import { useNavigation } from '@react-navigation/native';
+import { View, Text, Alert, Image } from 'react-native';
+
+
+import { Products } from '../interfaces/Products';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { AlignRight, ButtonRegister, CardItem, ImageCard, LoadingText, MainContainer, NameAndPhoto, TextCard, TextPrice, TextRegister, TitlePage } from '../components';
+import { deleteProduct, getProducts } from '../services/Api';
 
 const App = () => {
-    const [data, setData] = useState<Games[] | null | undefined>(null);
+    const [data, setData] = useState<Products[] | null | undefined>(null);
     const [loading, setLoading] = useState(false);
-    const [term, setTerm] = useState("");
     const navigation = useNavigation();
-    const GetData = async () => {
+    const route = useRoute();
+    async function _getData() {
         setLoading(true);
-        const response = await SearchApi(term);
-        setData(response.results);
+        const response = await getProducts();
         setLoading(false);
+        setData(response);
+    }
+    function _remove(id: number) {
+        Alert.alert('Atenção', 'Você deseja deletar esse produto?',
+            [{
+                text: "fechar",
+                style: 'cancel'
+            },
+            {
+                text: "Excluir",
+                onPress: async () => {
+                    await deleteProduct(id);
+                    _getData();
+                }
+            }
+            ]
+        );
+    }
+    useEffect(() => {
+        _getData();
+    }, [route.params]);
+
+
+    if (loading) {
+        return (<MainContainer>
+            <LoadingText>Aguarde, carregando...</LoadingText>
+        </MainContainer>);
     }
 
 
-    return <MainContainer>
-        <Text>Pesquise aqui algum jogo.</Text>
-        <Input onChangeText={e => setTerm(e)} />
-        <CenterContainer>
-            <Button onPress={GetData}>
-                <TextButton>Pesquisar</TextButton>
-            </Button>
-        </CenterContainer>
-        {loading ? <LoadingText>Aguarde, carregando...</LoadingText> : <>
-        <AlignRowItems>
-            {data?.length ? data.map(el => {
-                return (<Card onPress={() => {
-                    navigation.navigate('Details', {
-                        id: el.id
+    return (<MainContainer>
+        <TitlePage>Produtos</TitlePage>
+        <AlignRight>
+            <ButtonRegister onPress={
+                () => {
+                    navigation.navigate('Register');
+                }
+            }><TextRegister>Cadastrar Novo Produto</TextRegister></ButtonRegister>
+        </AlignRight>
+        <View>
+            {data?.length ? data.map(el =>
+                <CardItem onPress={() => {
+                    navigation.navigate('Edit', {
+                        id: el?.id
                     });
-                }} key={el.id}>
-                    <TitleCard>{el.name}</TitleCard>
-                    <CenterContainer>
-                        <ImageCard source={{ uri: el.background_image }} />
-                    </CenterContainer>
-                </Card>)
-            }) : <><Text>Não foi possível encontrar nenhum resultado com esses parâmetros</Text></>}
-        </AlignRowItems>
-        </>}
+                }}
+                    onLongPress={() => {
+                        _remove(el.id);
+                    }}
+                    key={el.id}>
+                    <NameAndPhoto>
+                        <ImageCard source={{ uri: el.image }} />
+                        <View>
+                            <TextCard>Produto: {el.name}</TextCard>
+                            <TextCard>Categoria: {el.category}</TextCard>
+                            <TextCard>Preço: {el.price}</TextCard>
+                        </View>
+                    </NameAndPhoto>
 
-    </MainContainer>;
+                </CardItem>
+            ) : <></>}
+        </View>
+    </MainContainer>);
 }
 
 

@@ -2,11 +2,14 @@ import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
 import HomeScreen from './pages/Home';
-import DetailsScreen from './pages/Details';
+import EditScreen from './pages/Edit';
+import RegisterScreen from './pages/Register';
+// import DetailsScreen from './pages/Details';
 
 type HomeStackParamList = {
   Home: undefined;
-  Details: { id: number };
+  Edit: { id: number };
+  Register: undefined;
 };
 
 const HomeStack = createNativeStackNavigator<HomeStackParamList>();
@@ -16,10 +19,19 @@ const HomeStackNavigator = () => {
     <NavigationContainer>
       <HomeStack.Navigator>
         <HomeStack.Screen name="Home" options={{
-          header:() => <></>
+          header: () => <></>
         }} component={HomeScreen} />
-        <HomeStack.Screen name="Details"
-         component={DetailsScreen} />
+        <HomeStack.Screen name="Register"
+        options={{
+          title: "Registrar Produto"
+        }}
+          component={RegisterScreen} />
+        <HomeStack.Screen name="Edit"
+        options={{
+          title: "Editar Produto"
+        }}
+          component={EditScreen} />
+
       </HomeStack.Navigator>
     </NavigationContainer>
   );
