@@ -67,7 +67,7 @@ const App = () => {
                     }}
                     key={el.id}>
                     <NameAndPhoto>
-                        <ImageCard source={{ uri: el.image }} />
+                        <ImageCard source={{ uri: el.image ? el.image : null }} />
                         <View>
                             <TextCard>Produto: {el.name}</TextCard>
                             <TextCard>Categoria: {el.category}</TextCard>
